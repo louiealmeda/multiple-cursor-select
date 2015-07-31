@@ -158,6 +158,37 @@ define(function (require, exports, module) {
 
         clearAllMarks(editor);
 
+        markUnselectedMatches(editor);
+
+        // var unselected = matches.slice(selected.length);
+
+        // for(i in unselected){
+        //     var current = unselected[i];
+        //     editor._codeMirror.doc.markText(current.start,current.end, {
+        //         className: "mcs-unselected"
+        //     });    
+        // }
+        
+
+    }
+
+    function skipNextMatch(){
+
+        var editor = EditorManager.getActiveEditor();
+
+        console.log("skipping");
+        console.log(JSON.stringify(matches, true));
+
+        matches.splice(selected.length, 1);
+        console.log(JSON.stringify(matches, true));
+
+        clearAllMarks(editor);
+        markUnselectedMatches(editor);
+    }
+
+
+    function markUnselectedMatches(editor){
+
         var unselected = matches.slice(selected.length);
 
         for(i in unselected){
@@ -166,12 +197,6 @@ define(function (require, exports, module) {
                 className: "mcs-unselected"
             });    
         }
-        
-
-    }
-
-    function skipNextMatch(){
-
         
 
     }
