@@ -100,13 +100,15 @@ define(function (require, exports, module) {
         var editor = EditorManager.getActiveEditor();
         var selection = editor.getSelection();
         var line = editor.document.getLine(selection.start.line);
-        var selectedText = escapeRegexpChars(line.substring(selection.start.ch, selection.end.ch));
+        var originalText = line.substring(selection.start.ch, selection.end.ch);
+        var selectedText = escapeRegexpChars(originalText);
         
         var contents = editor._codeMirror.doc.getValue();
 
         if(selectedText.length == 0)
             return;
 
+        console.log(selectedText + " == " + prevText);
         //Do this only when new selection is made///////
         if(prevText != selectedText && editor.hasSelection()
             )
@@ -124,7 +126,7 @@ define(function (require, exports, module) {
                     start: start,
                     end: {
                         line: start.line,
-                        ch: start.ch + selectedText.length
+                        ch: start.ch + originalText.length
                     },
                     reserved: false
                 };
@@ -159,17 +161,6 @@ define(function (require, exports, module) {
         clearAllMarks(editor);
 
         markUnselectedMatches(editor);
-
-        // var unselected = matches.slice(selected.length);
-
-        // for(i in unselected){
-        //     var current = unselected[i];
-        //     editor._codeMirror.doc.markText(current.start,current.end, {
-        //         className: "mcs-unselected"
-        //     });    
-        // }
-        
-
     }
 
     function skipNextMatch(){
