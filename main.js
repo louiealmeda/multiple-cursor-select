@@ -106,15 +106,36 @@ define(function (require, exports, module) {
         var contents = editor._codeMirror.doc.getValue();
 
         if(selectedText.length == 0)
+        {
+            //console.log(editor);
+            var word = editor._codeMirror.findWordAt(editor._codeMirror.getCursor());
+            //console.log(word);
+            var wordSelection = {
+                start: {
+                    line: word.anchor.line,
+                    ch: word.anchor.ch
+                },
+                end: {
+                    line: word.head.line,
+                    ch: word.head.ch
+                },
+                reserved: false
+            };
+            //console.log(wordSelection);
+            editor.setSelections([wordSelection]);
+            ////console.log(editor._codeMirror.getRange(word.anchor, word.head));
+            ////console.log("no selection");
+            selectNext();
             return;
+        }
 
-        console.log(selectedText + " == " + prevText);
+        //console.log(selectedText + " == " + prevText);
         //Do this only when new selection is made///////
         if(prevText != selectedText && editor.hasSelection()
             )
         {
             onChange(editor);
-            console.log("Matching...");
+            //console.log("Matching...");
             matches = getMatches(contents, selectedText);
 
             //Convert matches to selections//////////////
@@ -167,11 +188,11 @@ define(function (require, exports, module) {
 
         var editor = EditorManager.getActiveEditor();
 
-        console.log("skipping");
-        console.log(JSON.stringify(matches, true));
+        //console.log("skipping");
+        //console.log(JSON.stringify(matches, true));
 
         matches.splice(selected.length, 1);
-        console.log(JSON.stringify(matches, true));
+        //console.log(JSON.stringify(matches, true));
 
         clearAllMarks(editor);
         markUnselectedMatches(editor);
@@ -205,11 +226,12 @@ define(function (require, exports, module) {
     }
 
     function getMatches(haystack, needle) {
-        var regex = new RegExp(needle.toLowerCase(), 'g'),
+        // var regex = new RegExp(needle.toLowerCase(), 'g'),
+        var regex = new RegExp(needle, 'g'),
             result = [],
             match;
 
-        haystack = haystack.toLowerCase();
+        // haystack = haystack.toLowerCase();
 
         while ((match = regex.exec(haystack)) != null) {
             result.push(match.index);
@@ -222,9 +244,6 @@ define(function (require, exports, module) {
     CommandManager.register("Skip next match", SKIPSELECTION, skipNextMatch);
 
     // Add command to View menu.
-    Menus.getMenu(Menus.AppMenuBar.VIEW_MENU).addMenuItem(SELECTMULTIPLE, [{ "key": "Alt-D" }, { "key": "Alt-D", "platform": "mac" }]);
-    Menus.getMenu(Menus.AppMenuBar.VIEW_MENU).addMenuItem(SKIPSELECTION, [{ "key": "Alt-S" }, { "key": "Alt-S", "platform": "mac" }]);
-    // Set the starting state for the menu item.
-    CommandManager.get(SELECTMULTIPLE).setChecked(_enabled);
-    CommandManager.get(SKIPSELECTION).setChecked(_enabled);
+    Menus.getMenu(Menus.AppMenuBar.FIND_MENU).addMenuItem(SELECTMULTIPLE, [{ "key": "Alt-D" }, { "key": "Alt-D", "platform": "mac" }]);
+    Menus.getMenu(Menus.AppMenuBar.FIND_MENU).addMenuItem(SKIPSELECTION, [{ "key": "Alt-S" }, { "key": "Alt-S", "platform": "mac" }]);
 });
